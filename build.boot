@@ -17,3 +17,14 @@
          '[pandeiro.boot-http :refer [serve]]
          '[adzerk.boot-reload :refer [reload]] ;; make reload visible
          '[adzerk.boot-cljs-repl :refer [cljs-repl start-repl]]) ;; make it visible
+
+(deftask dev
+  "The works"
+  []
+  (comp
+    (serve :dir "target")
+    (watch)
+    (reload)
+    (cljs-repl)
+    (cljs)
+    (target :dir #{"target"})))
