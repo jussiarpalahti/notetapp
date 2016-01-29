@@ -5,4 +5,6 @@
 (enable-console-print!)
 (println "Hello All!!!")
 (js/foo)
-(js/m "div")
+(.render js/m
+  (.getElementById js/document "app")
+  (js/m "div" "jei!"))
