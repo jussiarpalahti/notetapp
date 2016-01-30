@@ -3,17 +3,18 @@
   (:require [foo.bar] [m]))
 
 (def db
-  (js-obj "var" (str "tosi: " (rand-int 10))))
+  {:var (str "tosi:" (rand-int 10))})
 
 (defn ^:export ctrl []
   (println "Calling major Tom"))
-(defn ^:export viewer [arg]
+(defn ^:export viewer [c]
   (println "Seeing things")
-  (js/m "div" (.-var db)))
-(def app (js-obj "controller" ctrl "view" viewer))
+  (js/m "div" (.-var (clj->js db))))
 
-(defn ^:export updatedb [arg]
-  (set! (.-var db) arg)
+(def app {:controller ctrl :view viewer})
+
+(defn ^:export updatedb [fields value]
+  (set! db (assoc-in db fields value))
   (.redraw js/m true))
 
 (enable-console-print!)
@@ -21,4 +22,5 @@
 (js/foo)
 (.mount js/m
   (.getElementById js/document "app")
-  app)
+  (clj->js app))
+
