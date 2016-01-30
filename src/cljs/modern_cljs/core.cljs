@@ -2,6 +2,9 @@
 (ns modern-cljs.core
   (:require [foo.bar] [m]))
 
+(defn m [tag attrs values]
+  (js/m tag (clj->js attrs) (clj->js values)))
+
 (def db
   {:var (str "tosi:" (rand-int 10))})
 
@@ -9,7 +12,7 @@
   (println "Calling major Tom"))
 (defn ^:export viewer [c]
   (println "Seeing things")
-  (js/m "div" (.-var (clj->js db))))
+  (m "div" {:style {:color "green"}} (:var db)))
 
 (def app {:controller ctrl :view viewer})
 
@@ -23,4 +26,3 @@
 (.mount js/m
   (.getElementById js/document "app")
   (clj->js app))
-
