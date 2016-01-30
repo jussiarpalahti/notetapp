@@ -1,2 +1,2 @@
 
-foo = function() {};
+var foo = function() {};
