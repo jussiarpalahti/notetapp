@@ -4,23 +4,31 @@
             [m]
             [ajax.core :refer [GET POST]]))
 
+; Mithril helpers
+
 (defn m [tag attrs values]
   "Mithril in Cljs"
   (js/m tag (clj->js attrs) (clj->js values)))
 
+;
+;  Data handlers
+;
 
 (def db
   {:var (str "tosi:" (rand-int 10))})
 
+(defn ^:export updatedb [fields value]
+  (set! db (assoc-in db fields value))
+  (.redraw js/m true))
+
 (defn handler [resp]
   "Data request handler"
   (.log js/console "Request successful")
-  (set! db (assoc db :response resp)))
-
+  (updatedb [:data] resp))
 
 (defn error-handler [{:keys [status status-text]}]
   "Data request error handler"
-  (.log js/console (str "something bad happened: " status " " status-text)))
+  (.log js/console (str "something went wrong: " status " " status-text)))
 
 
 (defn fetch [url]
@@ -28,18 +36,29 @@
   (GET url {:handler handler
             :error-handler error-handler
             :format "json"}))
+;
+; View
+;
 
-(defn ^:export ctrl []
-  (println "Calling major Tom"))
-(defn ^:export viewer [c]
+(defn notes []
+  "Returns 10 items from data"
+  (map
+    (fn [item]
+      (let [title (get item "title")]
+          (m "li" nil title)))
+    (take 10 (:data db))))
+
+(defn ctrl []
+  (println "Calling major Tom")
+  (fetch "/data.json"))
+
+(defn viewer [c]
   (println "Seeing things")
-  (m "div" {:style {:color "green"}} (:var db)))
+  (m "div" nil
+     [(m "h1" {:style {:color "green"}} (:var db))
+      (m "ol" nil (notes))]))
 
 (def app {:controller ctrl :view viewer})
-
-(defn ^:export updatedb [fields value]
-  (set! db (assoc-in db fields value))
-  (.redraw js/m true))
 
 (enable-console-print!)
 (println "Hello All!!!")

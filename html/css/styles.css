@@ -6,6 +6,9 @@ html {
 	padding:1em;
 	background:#B9C2CC;
 }
+body {
+	margin: 1em;
+}
 form {
 	background:#fff;
 	padding:1em;
