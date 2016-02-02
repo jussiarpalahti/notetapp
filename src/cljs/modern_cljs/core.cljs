@@ -4,6 +4,10 @@
             [m]
             [ajax.core :refer [GET POST]]))
 
+; Contants
+
+(def ^:const PAGESIZE 10)
+
 ; Mithril helpers
 
 (defn m [tag attrs values]
@@ -15,7 +19,8 @@
 ;
 
 (def db
-  {:var (str "tosi:" (rand-int 10))})
+  {:var (str "tosi:" (rand-int 10))
+   :start 10})
 
 (defn ^:export updatedb [fields value]
   (set! db (assoc-in db fields value))
@@ -40,13 +45,13 @@
 ; View
 ;
 
-(defn notes []
+(defn notes [start]
   "Returns 10 items from data"
   (map
     (fn [item]
       (let [title (get item "title")]
           (m "li" nil title)))
-    (take 10 (:data db))))
+    (take PAGESIZE (drop start (:data db)))))
 
 (defn ctrl []
   (println "Calling major Tom")
@@ -56,7 +61,7 @@
   (println "Seeing things")
   (m "div" nil
      [(m "h1" {:style {:color "green"}} (:var db))
-      (m "ol" nil (notes))]))
+      (m "ol" nil (notes (:start db)))]))
 
 (def app {:controller ctrl :view viewer})
 
