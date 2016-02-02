@@ -4,11 +4,15 @@
             [m]
             [ajax.core :refer [GET POST]]))
 
-; Contants
+;
+; Constants
+;
 
 (def ^:const PAGESIZE 10)
 
+;
 ; Mithril helpers
+;
 
 (defn m [tag attrs values]
   "Mithril in Cljs"
@@ -41,27 +45,48 @@
   (GET url {:handler handler
             :error-handler error-handler
             :format "json"}))
+
+(defn setpage [next]
+  (updatedb [:start] next))
+
 ;
 ; View
 ;
 
-(defn notes [start]
+(defn notes [data start]
   "Returns 10 items from data"
   (map
     (fn [item]
       (let [title (get item "title")]
           (m "li" nil title)))
-    (take PAGESIZE (drop start (:data db)))))
+    (take PAGESIZE (drop start data))))
+
+(defn page [start direction count]
+  (let [next (direction start PAGESIZE)
+        pagenum (if (= next 0) 1 next)
+        end (+ next PAGESIZE)
+        stop (if (not (or (< next 0) (< count next))) true false)]
+    (if stop
+      (m "span" nil
+       [(m "a"
+           {:onclick #(setpage next) :href "#"}
+           (str "Items: " pagenum "-" end))])
+      nil)))
+
+(defn pages []
+  (let [start (:start db)
+        count (count (:data db))]
+    (m "div" nil ["Count: " count " " (page start - count) " " (page start + count)])))
 
 (defn ctrl []
   (println "Calling major Tom")
   (fetch "/data.json"))
 
 (defn viewer [c]
-  (println "Seeing things")
   (m "div" nil
      [(m "h1" {:style {:color "green"}} (:var db))
-      (m "ol" nil (notes (:start db)))]))
+      (m "ol" nil (notes (:data db) (:start db)))
+      (pages)]))
 
 (def app {:controller ctrl :view viewer})
 
