@@ -24,7 +24,7 @@
 
 (def db
   {:var (str "tosi:" (rand-int 10))
-   :start 10
+   :start 0
    :editing {}})
 
 (defn ^:export updatedb [fields value]
@@ -53,12 +53,25 @@
 (defn update_field [id value]
   (set! db (assoc-in db [:editing id] value)))
 
-(defn save []
-  (println "Saved!" (str (:editing db))))
-
 (defn clear []
   (updatedb [:editing] {})
   (println "Cleared!"))
+
+(defn edit [item pos]
+  (println "editing" pos item)
+  (updatedb [:editing] (merge {:pos pos} item)))
+
+(defn save []
+  (let [doc (:editing db)
+        data (:data db)
+        pos (:pos doc)]
+    (if (not (empty? doc))
+      (do
+        (if (not (nil? pos))
+          (updatedb [:data] (assoc data pos (dissoc doc :pos)))
+          (updatedb [:data] (into [doc] data)))
+        (clear)
+        (println "Saved!" (str doc))))))
 
 ;
 ; View
@@ -93,10 +106,11 @@
 
 (defn notes [data start]
   "Returns 10 items from data"
-  (map
-    (fn [item]
+  (map-indexed
+    (fn [i item]
       (let [title (get item "title")]
-          (m "li" nil title)))
+          (m "li" nil [(m "button" {:onclick #(edit item i)} "Edit")
+                       title])))
     (take PAGESIZE (drop start data))))
 
 (defn page [start direction count]
