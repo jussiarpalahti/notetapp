@@ -51,13 +51,13 @@
   (updatedb [:start] next))
 
 (defn update_field [id value]
-  (println "Updating" id value)
   (set! db (assoc-in db [:editing id] value)))
 
 (defn save []
-  (println "Saved!"))
+  (println "Saved!" (str (:editing db))))
 
 (defn clear []
+  (updatedb [:editing] {})
   (println "Cleared!"))
 
 ;
