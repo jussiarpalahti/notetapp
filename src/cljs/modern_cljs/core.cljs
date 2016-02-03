@@ -108,8 +108,9 @@
   "Returns 10 items from data"
   (map-indexed
     (fn [i item]
-      (let [title (get item "title")]
-          (m "li" nil [(m "button" {:onclick #(edit item i)} "Edit")
+      (let [title (get item "title")
+            pos (+ start i)]
+          (m "li" nil [(m "button" {:onclick #(edit item pos)} "Edit")
                        title])))
     (take PAGESIZE (drop start data))))
 
