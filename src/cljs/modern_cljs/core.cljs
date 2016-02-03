@@ -53,6 +53,31 @@
 ; View
 ;
 
+(defn text [value]
+  (m "input[type=text]" {:value value} nil))
+
+(defn editor [data]
+  (let [title (get data "title" "")
+        url (get data "url" "")
+        referer (get data "referer" "")
+        comment (get data "comment" "")
+        time (get data "time" "")]
+    (m "table#editor" nil
+       [(m "tr" nil
+           [(m "td" nil "Title")
+            (m "td" nil "Url")
+            (m "td" nil "Referer")
+            (m "td" nil "Comment")
+            (m "td" nil "Time")
+            (m "td" nil "")])
+        (m "tr" nil [(m "td" nil (text title))
+                     (m "td" nil (text url))
+                     (m "td" nil (text referer))
+                     (m "td" nil (text comment))
+                     (m "td" nil (text time))
+                     (m "td#edit" nil [(m "button" nil "Save")
+                                  (m "button" nil "Clear")])])])))
+
 (defn notes [data start]
   "Returns 10 items from data"
   (map
@@ -85,7 +110,8 @@
 (defn viewer [c]
   (m "div" nil
      [(m "h1" {:style {:color "green"}} (:var db))
-      (m "ol" nil (notes (:data db) (:start db)))
+      (editor {})
+      (m "div" {} [(m "ol" nil (notes (:data db) (:start db)))])
       (pages)]))
 
 (def app {:controller ctrl :view viewer})
