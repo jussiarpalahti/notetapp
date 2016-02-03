@@ -24,7 +24,8 @@
 
 (def db
   {:var (str "tosi:" (rand-int 10))
-   :start 10})
+   :start 10
+   :editing {}})
 
 (defn ^:export updatedb [fields value]
   (set! db (assoc-in db fields value))
@@ -49,12 +50,24 @@
 (defn setpage [next]
   (updatedb [:start] next))
 
+(defn update_field [id value]
+  (println "Updating" id value)
+  (set! db (assoc-in db [:editing id] value)))
+
+(defn save []
+  (println "Saved!"))
+
+(defn clear []
+  (println "Cleared!"))
+
 ;
 ; View
 ;
 
-(defn text [value]
-  (m "input[type=text]" {:value value} nil))
+(defn text [id value]
+  (m "input[type=text]"
+     {:value value :onchange #(update_field id (-> % .-target .-value))}
+     nil))
 
 (defn editor [data]
   (let [title (get data "title" "")
@@ -70,13 +83,13 @@
             (m "td" nil "Comment")
             (m "td" nil "Time")
             (m "td" nil "")])
-        (m "tr" nil [(m "td" nil (text title))
-                     (m "td" nil (text url))
-                     (m "td" nil (text referer))
-                     (m "td" nil (text comment))
-                     (m "td" nil (text time))
-                     (m "td#edit" nil [(m "button" nil "Save")
-                                  (m "button" nil "Clear")])])])))
+        (m "tr" nil [(m "td" nil (text "title" title))
+                     (m "td" nil (text "url" url))
+                     (m "td" nil (text "referer" referer))
+                     (m "td" nil (text "comment" comment))
+                     (m "td" nil (text "time" time))
+                     (m "td#edit" nil [(m "button" {:onclick #(save)} "Save")
+                                  (m "button" {:onclick #(clear)} "Clear")])])])))
 
 (defn notes [data start]
   "Returns 10 items from data"
@@ -104,13 +117,14 @@
     (m "div" nil ["Count: " count " " (page start - count) " " (page start + count)])))
 
 (defn ctrl []
-  (println "Calling major Tom")
-  (fetch "/data.json"))
+  (if (not (:data db nil))
+    (do (println "Calling major Tom")
+        (fetch "/data.json"))))
 
 (defn viewer [c]
   (m "div" nil
      [(m "h1" {:style {:color "green"}} (:var db))
-      (editor {})
+      (editor (:editing db))
       (m "div" {} [(m "ol" nil (notes (:data db) (:start db)))])
       (pages)]))
 
