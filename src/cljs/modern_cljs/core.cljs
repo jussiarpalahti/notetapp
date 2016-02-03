@@ -69,7 +69,9 @@
       (do
         (if (not (nil? pos))
           (updatedb [:data] (assoc data pos (dissoc doc :pos)))
-          (updatedb [:data] (into [doc] data)))
+          (do
+            (updatedb [:data] (into [doc] data))
+            (updatedb [:start] 0)))
         (clear)
         (println "Saved!" (str doc))))))
 
