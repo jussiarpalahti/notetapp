@@ -67,10 +67,11 @@
 
 (defn data_from_db [url]
   "Getting data from Dropbox"
-  (.read js/crud url (fn [resp]
-                                (println "Fetched from DB")
-                                (let [data (.parse js/JSON resp)]
-                                  (updatedb [:data] (js->clj data))))))
+  (.read js/crud url
+         (fn [resp]
+           (println "Fetched data from DB")
+           (let [data (.parse js/JSON resp)]
+           (updatedb [:data] (js->clj data))))))
 
 (defn setpage [next]
   (updatedb [:start] next))
@@ -178,14 +179,14 @@
 (println "Hello All!!!")
 (js/foo)
 
-(js/setup_dropbox)
-(if (and (not(nil? js/client)) (.isAuthenticated js/client))
+(if (nil? js/client) (js/setup_dropbox))
+(if (.isAuthenticated js/client)
   (do
     (set! (.-mode (.-route js/m)) "hash")
     (.route js/m
-            (.getElementById js/document "app")
-            "/"
-            (clj->js {"/" app})))
+      (.getElementById js/document "app")
+      "/"
+      (clj->js {"/" app})))
   (println "No auth!"))
 
 ;; (require '[modern-cljs.core :as c] :reload)
