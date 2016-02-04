@@ -150,7 +150,10 @@
     (if stop
       (m "span" nil
        [(m "a"
-           {:onclick #(setpage next) :href "#"}
+           {:onclick (fn [e]
+                       (.preventDefault e)
+                       (setpage next))
+            :href ""}
            (str "Items: " pagenum "-" end))])
       nil)))
 
