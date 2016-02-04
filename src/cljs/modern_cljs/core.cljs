@@ -65,10 +65,12 @@
             :error-handler error-handler
             :format "json"}))
 
-(defn data_from_db []
+(defn data_from_db [url]
   "Getting data from Dropbox"
-  (.read js/crud "/data.json" (fn [data]
-                                (println "Fetched from DB" data))))
+  (.read js/crud url (fn [resp]
+                                (println "Fetched from DB")
+                                (let [data (.parse js/JSON resp)]
+                                  (updatedb [:data] (js->clj data))))))
 
 (defn setpage [next]
   (updatedb [:start] next))
@@ -161,7 +163,7 @@
     (println "initial param was:" par))
   (if (not (:data db nil))
     (do (println "Calling major Tom")
-        (fetch "/data.json"))))
+        (data_from_db "/data.json"))))
 
 (defn viewer [c]
   (m "div" nil
