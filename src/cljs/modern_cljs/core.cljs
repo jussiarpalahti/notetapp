@@ -65,6 +65,11 @@
             :error-handler error-handler
             :format "json"}))
 
+(defn data_from_db []
+  "Getting data from Dropbox"
+  (.read js/crud "/data.json" (fn [data]
+                                (println "Fetched from DB" data))))
+
 (defn setpage [next]
   (updatedb [:start] next))
 
