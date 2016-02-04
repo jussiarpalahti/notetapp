@@ -140,7 +140,7 @@
             pos (+ start i)]
           (m "li" nil [(m "button" {:onclick #(edit item pos)} "Edit")
                        title])))
-    (take PAGESIZE (drop start data))))
+    (subvec data start (+ start PAGESIZE))))
 
 (defn page [start direction count]
   (let [next (direction start PAGESIZE)
@@ -161,7 +161,8 @@
 
 (defn ctrl []
   (let [par (.param (.-route js/m) "hih")]
-    (println "initial param was:" par))
+    (if (not(nil? par))
+      (println "initial param was:" par)))
   (if (not (:data db nil))
     (do (println "Calling major Tom")
         (data_from_db "/data.json"))))
