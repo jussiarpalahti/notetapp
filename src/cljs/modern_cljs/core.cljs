@@ -18,6 +18,21 @@
   "Mithril in Cljs"
   (js/m tag (clj->js attrs) (clj->js values)))
 
+(defn nm
+  "Mithril in Cljs supporting different arguments amounts"
+  ([x]
+   '("Lone tag"))
+  ([x y]
+   (if (= (type y) (type []))
+     '("Tag with children")
+     (if (= (type y) (type {}))
+       '("Lone tag with attrs")
+       '("Tag with text worthy content, I hope"))))
+  ([x y z]
+   (if (= (type z) (type []))
+     '("Tag with attrs and children")
+     '("Tag with attrs and text worthy content, I hope"))))
+
 ;
 ;  Data handlers
 ;
@@ -155,3 +170,4 @@
   (clj->js app))
 
 ;; (require '[modern-cljs.core :as c] :reload)
+;; alt cmd e -> search repl history
