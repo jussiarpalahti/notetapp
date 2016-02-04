@@ -23,7 +23,7 @@
   "The works"
   []
   (comp
-    (serve :dir "target")
+    (serve :dir "target" :port 8080)
     (watch)
     (reload)
     (cljs-repl)
