@@ -149,6 +149,8 @@
     (m "div" nil ["Count: " count " " (page start - count) " " (page start + count)])))
 
 (defn ctrl []
+  (let [par (.param (.-route js/m) "hih")]
+    (println "initial param was:" par))
   (if (not (:data db nil))
     (do (println "Calling major Tom")
         (fetch "/data.json"))))
@@ -165,9 +167,10 @@
 (enable-console-print!)
 (println "Hello All!!!")
 (js/foo)
-(.mount js/m
-  (.getElementById js/document "app")
-  (clj->js app))
+(.route js/m
+        (.getElementById js/document "app")
+        "/"
+        (clj->js {"/" app}))
 
 ;; (require '[modern-cljs.core :as c] :reload)
 ;; alt cmd e -> search repl history
