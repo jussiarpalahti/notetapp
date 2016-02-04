@@ -2,7 +2,10 @@
 (ns modern-cljs.core
   (:require [foo.bar]
             [m]
-            [ajax.core :refer [GET POST]]))
+            [ajax.core :refer [GET POST]]
+            [crud]
+            [client]
+            [setup_dropbox]))
 
 ;
 ; Constants
@@ -167,10 +170,16 @@
 (enable-console-print!)
 (println "Hello All!!!")
 (js/foo)
-(.route js/m
-        (.getElementById js/document "app")
-        "/"
-        (clj->js {"/" app}))
+
+(js/setup_dropbox)
+(if (and (not(nil? js/client)) (.isAuthenticated js/client))
+  (do
+    (set! (.-mode (.-route js/m)) "hash")
+    (.route js/m
+            (.getElementById js/document "app")
+            "/"
+            (clj->js {"/" app})))
+  (println "No auth!"))
 
 ;; (require '[modern-cljs.core :as c] :reload)
 ;; alt cmd e -> search repl history
