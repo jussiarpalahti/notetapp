@@ -12,7 +12,7 @@
 ;
 
 (def ^:const PAGESIZE 10)
-
+(def ^:const DB "/data2.json")
 ;
 ; Mithril helpers
 ;
@@ -58,7 +58,6 @@
   "Data request error handler"
   (.log js/console (str "something went wrong: " status " " status-text)))
 
-
 (defn fetch [url]
   "Get data from URL"
   (GET url {:handler handler
@@ -72,6 +71,10 @@
            (println "Fetched data from DB")
            (let [data (.parse js/JSON resp)]
            (updatedb [:data] (js->clj data))))))
+
+(defn data_to_db [url]
+  "Send data to db"
+  (.write js/crud url (.stringify js/JSON (clj->js (:data db)))))
 
 (defn setpage [next]
   (updatedb [:start] next))
@@ -140,7 +143,9 @@
             pos (+ start i)]
           (m "li" nil [(m "button" {:onclick #(edit item pos)} "Edit")
                        title])))
-    (subvec data start (+ start PAGESIZE))))
+    (if (< PAGESIZE (count data))
+      (subvec data start (+ start PAGESIZE))
+      data)))
 
 (defn page [start direction count]
   (let [next (direction start PAGESIZE)
@@ -168,11 +173,12 @@
       (println "initial param was:" par)))
   (if (not (:data db nil))
     (do (println "Calling major Tom")
-        (data_from_db "/data.json"))))
+        (data_from_db DB))))
 
 (defn viewer [c]
   (m "div" nil
      [(m "h1" {:style {:color "green"}} (:var db))
+      (m "div" nil [(m "button" {:onclick #(data_to_db DB)} "Send!")])
       (editor (:editing db))
       (m "div" {} [(m "ol" nil (notes (:data db) (:start db)))])
       (pages)]))
