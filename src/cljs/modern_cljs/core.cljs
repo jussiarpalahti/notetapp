@@ -208,23 +208,25 @@
 (def app {:controller ctrl :view viewer})
 
 (enable-console-print!)
-(println "Hello All!!!")
-(js/foo)
 
-(if (nil? js/client) (js/setup_dropbox))
-(if (.isAuthenticated js/client)
+(js/setup_dropbox)
+
+(defn setup []
   (do
     (set! (.-mode (.-route js/m)) "hash")
     (.route js/m
-      (.getElementById js/document "app")
-      "/"
-      (clj->js {"/" app})))
+            (.getElementById js/document "app")
+            "/"
+            (clj->js {"/" app}))))
+
+(if (and (not (nil? js/client)) (.isAuthenticated js/client))
+  (setup)
   (println "No auth!"))
 
-(let [par (.param (.-route js/m) "hih")]
-  (if (not(nil? par))
-    (println "initial param was:" par)
-    (.route js/m "/")))
+;(let [par (.param (.-route js/m) "hih")]
+;  (if (not(nil? par))
+;    (println "initial param was:" par)
+;    (.route js/m "/")))
 
 ;; (require '[modern-cljs.core :as c] :reload)
 ;; alt cmd e -> search repl history

@@ -27,8 +27,10 @@
     (watch)
     (reload)
     (cljs-repl)
-    (cljs)
+    (cljs :compiler-options {:parallel-build true})
     (target :dir #{"target"})))
+
+; {:compiler-options {:parallel-build true}}
 
 (defn- generate-lein-project-file! [& {:keys [keep-project] :or {:keep-project true}}]
   (require 'clojure.java.io)

@@ -8,5 +8,6 @@ var crud = {
 var setup_dropbox = function () {};
 
 var client = {
-    "authenticate" : function () {}
+    "authenticate" : function () {},
+    "isAuthenticated" : function () {}
 };
