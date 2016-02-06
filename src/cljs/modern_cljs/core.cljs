@@ -12,7 +12,8 @@
 ;
 
 (def ^:const PAGESIZE 10)
-(def ^:const DB "/data2.json")
+(def ^:const DB "/data.json")
+
 ;
 ; Mithril helpers
 ;
@@ -148,9 +149,9 @@
                 comment (get item "comment" "")
                 time (get item "time" "")
                 pos (+ start i)]
-              (m "tr" nil [(m "td" nil title)
-                           (m "td" nil url)
-                           (m "td" nil referer)
+              (m "tr" nil [(m "td.itemtitle" nil title)
+                           (m "td" nil (m ".sizer" nil url))
+                           (m "td" nil (m ".sizer" nil referer))
                            (m "td" nil time)
                            (m "td" nil comment)
                            (m "td" nil
@@ -186,7 +187,7 @@
 
 (defn viewer [c]
   (m "div" nil
-     [(m "h1" {:style {:color "green"}} "NoteTapp")
+     [(m "div" nil [(m "h1" {:style {:color "green"}} "NoteTapp")])
       (m "#nav" nil
          [(m "div" nil
              (m "button.pure-button.button-success" {:onclick #(data_to_db DB)} "Save"))])
