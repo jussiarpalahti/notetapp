@@ -38,6 +38,10 @@
      '("Tag with attrs and children")
      '("Tag with attrs and text worthy content, I hope"))))
 
+(defn route_param [param]
+  "Get param from route params"
+  (.param (.-route js/m) param))
+
 ;
 ; Closure helpers
 ;
@@ -220,13 +224,16 @@
             (clj->js {"/" app}))))
 
 (if (and (not (nil? js/client)) (.isAuthenticated js/client))
-  (setup)
+  (do
+    (setup)
+    (let [params {"title" (route_param "title")
+                  "url" (route_param "url")
+                  "referer" (route_param "referer")}]
+      (if (not(nil? params))
+        (do (println "initial param was:" params)
+            (updatedb [:editing] params)
+            (.route js/m "/")))))
   (println "No auth!"))
-
-;(let [par (.param (.-route js/m) "hih")]
-;  (if (not(nil? par))
-;    (println "initial param was:" par)
-;    (.route js/m "/")))
 
 ;; (require '[modern-cljs.core :as c] :reload)
 ;; alt cmd e -> search repl history
