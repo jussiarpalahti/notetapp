@@ -177,7 +177,7 @@
 (defn pages []
   (let [start (:start db)
         count (count (:data db))]
-    (m "div" nil ["Count: " count " " (page start - count) " " (page start + count)])))
+    (m "#pages" nil ["Count: " count " " (page start - count) " " (page start + count)])))
 
 (defn ctrl []
   (if (not (:data db nil))
@@ -188,9 +188,10 @@
   (m "div" nil
      [(m "h1" {:style {:color "green"}} "NoteTapp")
       (m "#nav" nil
-         [(m "div" nil (m "button.pure-button.button-success" {:onclick #(data_to_db DB)} "Save"))
-          (pages)])
+         [(m "div" nil
+             (m "button.pure-button.button-success" {:onclick #(data_to_db DB)} "Save"))])
       (m "#editor" nil [(editor (:editing db))])
+      (pages)
       (m "div" {} [(notes (:data db) (:start db))])]))
 
 (def app {:controller ctrl :view viewer})

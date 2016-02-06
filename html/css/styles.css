@@ -4,7 +4,7 @@ html {
 	background-color: rgba(255, 227, 189, 0.43);
 }
 
-#nav div {
+#nav div, #pages {
 	margin: 0.2em 0.1em;
 }
 
