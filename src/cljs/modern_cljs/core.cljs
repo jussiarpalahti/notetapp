@@ -40,7 +40,7 @@
 
 (defn route_param [param]
   "Get param from route params"
-  (.param (.-route js/m) param))
+  ((aget (.-route js/m) "param") param))
 
 ;
 ; Closure helpers
