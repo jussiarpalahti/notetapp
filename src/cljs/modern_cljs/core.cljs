@@ -109,7 +109,8 @@
 
 (defn text [id value]
   (m "input[type=text]"
-     {:value value :onchange #(update_field id (-> % .-target .-value))}
+     {:value value :placeholder id
+      :onchange #(update_field id (-> % .-target .-value))}
      nil))
 
 (defn editor [data]
@@ -118,18 +119,21 @@
         referer (get data "referer" "")
         comment (get data "comment" "")
         time (get data "time" "")]
-    (m "table.editortable" nil
-       [(m "tr" nil [(m "td" nil (text "title" title))
-                     (m "td" nil (text "url" url))
-                     (m "td" nil (text "referer" referer))
-                     (m "td" nil (text "comment" comment))
-                     (m "td" nil (text "time" time))
-                     (m "td#edit" nil [(m "button" {:onclick #(save)} "Update")
-                                  (m "button" {:onclick #(clear)} "Clear")])])])))
+    (m "form.pure-form" nil
+       [(m "fieldset" nil
+           [(text "title" title)
+            (text "url" url)
+            (text "referer" referer)
+            (text "comment" comment)
+            (text "time" time)
+            (m "button.pure-button.pure-button-primary"
+               {:onclick #(save)} "Update")
+            " "
+            (m "button.pure-button" {:onclick #(clear)} "Clear")])])))
 
 (defn notes [data start]
   "Returns 10 items from data"
-  (m "table.datatable" nil
+  (m "table.datatable.pure-table.pure-table-horizontal" nil
      [(m "tr" nil
          [(m "td" nil "Title")
           (m "td" nil "Url")
@@ -151,7 +155,7 @@
                            (m "td" nil comment)
                            (m "td" nil time)
                            (m "td" nil
-                              [])])))
+                              [(m "button.pure-button" {:onclick #(edit item pos)} "Edit")])])))
         (if (< PAGESIZE (count data))
           (subvec data start (+ start PAGESIZE))
           data))]))
@@ -177,9 +181,6 @@
     (m "div" nil ["Count: " count " " (page start - count) " " (page start + count)])))
 
 (defn ctrl []
-  (let [par (.param (.-route js/m) "hih")]
-    (if (not(nil? par))
-      (println "initial param was:" par)))
   (if (not (:data db nil))
     (do (println "Calling major Tom")
         (data_from_db DB))))
@@ -187,9 +188,10 @@
 (defn viewer [c]
   (m "div" nil
      [(m "h1" {:style {:color "green"}} "NoteTapp")
-      (m "div" nil [(m "button" {:onclick #(data_to_db DB)} "Save")
-                    (pages)])
-      (editor (:editing db))
+      (m "#nav" nil
+         [(m "div" nil (m "button.pure-button.button-success" {:onclick #(data_to_db DB)} "Save"))
+          (pages)])
+      (m "div" nil [(editor (:editing db))])
       (m "div" {} [(notes (:data db) (:start db))])]))
 
 (def app {:controller ctrl :view viewer})
@@ -207,6 +209,11 @@
       "/"
       (clj->js {"/" app})))
   (println "No auth!"))
+
+(let [par (.param (.-route js/m) "hih")]
+  (if (not(nil? par))
+    (println "initial param was:" par)
+    (.route js/m "/")))
 
 ;; (require '[modern-cljs.core :as c] :reload)
 ;; alt cmd e -> search repl history
