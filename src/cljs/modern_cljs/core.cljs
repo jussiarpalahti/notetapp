@@ -41,8 +41,7 @@
 ;
 
 (def db
-  {:var (str "tosi:" (rand-int 10))
-   :start 0
+  {:start 0
    :editing {}})
 
 (defn ^:export updatedb [fields value]
@@ -119,33 +118,43 @@
         referer (get data "referer" "")
         comment (get data "comment" "")
         time (get data "time" "")]
-    (m "table#editor" nil
-       [(m "tr" nil
-           [(m "td" nil "Title")
-            (m "td" nil "Url")
-            (m "td" nil "Referer")
-            (m "td" nil "Comment")
-            (m "td" nil "Time")
-            (m "td" nil "")])
-        (m "tr" nil [(m "td" nil (text "title" title))
+    (m "table.editortable" nil
+       [(m "tr" nil [(m "td" nil (text "title" title))
                      (m "td" nil (text "url" url))
                      (m "td" nil (text "referer" referer))
                      (m "td" nil (text "comment" comment))
                      (m "td" nil (text "time" time))
-                     (m "td#edit" nil [(m "button" {:onclick #(save)} "Save")
+                     (m "td#edit" nil [(m "button" {:onclick #(save)} "Update")
                                   (m "button" {:onclick #(clear)} "Clear")])])])))
 
 (defn notes [data start]
   "Returns 10 items from data"
-  (map-indexed
-    (fn [i item]
-      (let [title (get item "title")
-            pos (+ start i)]
-          (m "li" nil [(m "button" {:onclick #(edit item pos)} "Edit")
-                       title])))
-    (if (< PAGESIZE (count data))
-      (subvec data start (+ start PAGESIZE))
-      data)))
+  (m "table.datatable" nil
+     [(m "tr" nil
+         [(m "td" nil "Title")
+          (m "td" nil "Url")
+          (m "td" nil "Referer")
+          (m "td" nil "Comment")
+          (m "td" nil "Time")
+          (m "td" nil "")])
+      (map-indexed
+        (fn [i item]
+          (let [title (get item "title" "")
+                url (get item "url" "")
+                referer (get item "referer" "")
+                comment (get item "comment" "")
+                time (get item "time" "")
+                pos (+ start i)]
+              (m "tr" nil [(m "td" nil title)
+                           (m "td" nil url)
+                           (m "td" nil referer)
+                           (m "td" nil comment)
+                           (m "td" nil time)
+                           (m "td" nil
+                              [])])))
+        (if (< PAGESIZE (count data))
+          (subvec data start (+ start PAGESIZE))
+          data))]))
 
 (defn page [start direction count]
   (let [next (direction start PAGESIZE)
@@ -177,11 +186,11 @@
 
 (defn viewer [c]
   (m "div" nil
-     [(m "h1" {:style {:color "green"}} (:var db))
-      (m "div" nil [(m "button" {:onclick #(data_to_db DB)} "Send!")])
+     [(m "h1" {:style {:color "green"}} "NoteTapp")
+      (m "div" nil [(m "button" {:onclick #(data_to_db DB)} "Save")
+                    (pages)])
       (editor (:editing db))
-      (m "div" {} [(m "ol" nil (notes (:data db) (:start db)))])
-      (pages)]))
+      (m "div" {} [(notes (:data db) (:start db))])]))
 
 (def app {:controller ctrl :view viewer})
 

@@ -4,3 +4,7 @@ html {
 	padding:1em;
 	background:#B9C2CC;
 }
+
+.datatable, .editortable {
+	width: 80%;
+}
