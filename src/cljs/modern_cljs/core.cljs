@@ -122,9 +122,9 @@
 ; View
 ;
 
-(defn text [id value]
+(defn text [id value size]
   (m "input[type=text]"
-     {:value value :placeholder id
+     {:value value :placeholder id :size size
       :onchange #(update_field id (-> % .-target .-value))}
      nil))
 
@@ -136,11 +136,11 @@
         time (get data "time" "")]
     (m "form.pure-form" nil
        [(m "fieldset" nil
-           [(text "title" title)
-            (text "url" url)
-            (text "referer" referer)
-            (text "time" time)
-            (text "comment" comment)
+           [(text "title" title 35)
+            (text "url" url 15)
+            (text "referer" referer 15)
+            (text "time" time 15)
+            (text "comment" comment 50)
             (m "button.pure-button.pure-button-primary"
                {:onclick #(save)} "Update")
             (m "button.pure-button" {:onclick #(clear)} "Clear")])])))
