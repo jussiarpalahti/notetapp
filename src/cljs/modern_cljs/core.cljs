@@ -13,7 +13,7 @@
 ;
 
 (def ^:const PAGESIZE 10)
-(def ^:const DB "/data.json")
+(def ^:const DB "/data2.json")
 
 ;
 ; Mithril helpers
@@ -134,16 +134,22 @@
         referer (get data "referer" "")
         comment (get data "comment" "")
         time (get data "time" "")]
-    (m "form.pure-form" nil
+    (m "form.pure-form"
+       {:obsubmit (fn [e]
+           (.preventDefault e)
+           (println "Shouldn't be submitting")
+            false)}
        [(m "fieldset" nil
            [(text "title" title 35)
             (text "url" url 15)
             (text "referer" referer 15)
             (text "time" time 15)
             (text "comment" comment 50)
-            (m "button.pure-button.pure-button-primary"
-               {:onclick #(save)} "Update")
-            (m "button.pure-button" {:onclick #(clear)} "Clear")])])))
+            (m "button.pure-button.pure-button-primary[type=button]"
+               {:onclick #(save)}
+               "Update")
+            (m "button.pure-button[type=button]"
+               {:onclick #(clear)} "Clear")])])))
 
 (defn notes [data start]
   "Returns 10 items from data"
@@ -213,16 +219,21 @@
 
 (enable-console-print!)
 
+;; Routing mode
+(aset (.-route js/m) "mode" "hash")
+
+;; Dropbox OAuth process
 (js/setup_dropbox)
 
 (defn setup []
+  "Mount app"
   (do
-    (set! (.-mode (.-route js/m)) "hash")
     (.route js/m
             (.getElementById js/document "app")
             "/"
             (clj->js {"/" app}))))
 
+;; If authentication has been successful, mount app and use query params if any
 (if (and (not (nil? js/client)) (.isAuthenticated js/client))
   (do
     (setup)
@@ -231,9 +242,10 @@
                   "referer" (route_param "referer")}]
       (if (not(nil? params))
         (do (println "initial param was:" params)
-            (updatedb [:editing] params)
-            (.route js/m "/")))))
+            (.route js/m "/")
+            (updatedb [:editing] params)))))
   (println "No auth!"))
 
 ;; (require '[modern-cljs.core :as c] :reload)
 ;; alt cmd e -> search repl history
+;; (.route js/m "/")
