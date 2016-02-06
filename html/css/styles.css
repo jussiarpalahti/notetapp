@@ -29,6 +29,6 @@ html {
 .itemtitle {
 	width: 20em;
 }
-/*.datatable, .editortable {*/
-	/*width: 80%;*/
-/*}*/
+.datatable, .editortable {
+	min-width: 50%;
+}

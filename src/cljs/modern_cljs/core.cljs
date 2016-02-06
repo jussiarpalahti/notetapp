@@ -5,7 +5,8 @@
             [ajax.core :refer [GET POST]]
             [crud]
             [client]
-            [setup_dropbox]))
+            [setup_dropbox]
+            [goog.i18n.DateTimeFormat :as dtf]))
 
 ;
 ; Constants
@@ -36,6 +37,15 @@
    (if (= (type z) (type []))
      '("Tag with attrs and children")
      '("Tag with attrs and text worthy content, I hope"))))
+
+;
+; Closure helpers
+;
+
+(defn format_time [d]
+  (let [format (new goog.i18n.DateTimeFormat "d.M.yyyy H:mm")]
+    (.format format d)))
+
 
 ;
 ;  Data handlers
@@ -152,7 +162,7 @@
               (m "tr" nil [(m "td.itemtitle" nil title)
                            (m "td" nil (m ".sizer" nil url))
                            (m "td" nil (m ".sizer" nil referer))
-                           (m "td" nil time)
+                           (m "td" nil (format_time (new js/Date time)))
                            (m "td" nil comment)
                            (m "td" nil
                               [(m "button.pure-button" {:onclick #(edit item pos)} "Edit")])])))
