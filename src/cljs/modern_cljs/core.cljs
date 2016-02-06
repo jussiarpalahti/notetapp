@@ -50,7 +50,6 @@
   (let [format (new goog.i18n.DateTimeFormat "d.M.yyyy H:mm")]
     (.format format d)))
 
-
 ;
 ;  Data handlers
 ;
@@ -239,11 +238,13 @@
     (setup)
     (let [params {"title" (route_param "title")
                   "url" (route_param "url")
-                  "referer" (route_param "referer")}]
-      (if (not(nil? params))
+                  "referer" (route_param "referer")
+                  "time" (str (new js/Date))}]
+      (if (not(nil? (get "url" params)))
         (do (println "initial param was:" params)
             (.route js/m "/")
-            (updatedb [:editing] params)))))
+            (updatedb [:editing] params))
+        (println "No params!"))))
   (println "No auth!"))
 
 ;; (require '[modern-cljs.core :as c] :reload)
