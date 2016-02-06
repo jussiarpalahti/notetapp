@@ -4,8 +4,12 @@ html {
 	background-color: rgba(255, 227, 189, 0.43);
 }
 
-#nav {
+#nav div {
+	margin: 0.2em 0.1em;
+}
 
+#editor input, #editor button {
+	margin: 0.1em;
 }
 
 .button-success {

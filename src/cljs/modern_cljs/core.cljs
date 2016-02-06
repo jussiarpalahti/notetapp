@@ -124,23 +124,22 @@
            [(text "title" title)
             (text "url" url)
             (text "referer" referer)
-            (text "comment" comment)
             (text "time" time)
+            (text "comment" comment)
             (m "button.pure-button.pure-button-primary"
                {:onclick #(save)} "Update")
-            " "
             (m "button.pure-button" {:onclick #(clear)} "Clear")])])))
 
 (defn notes [data start]
   "Returns 10 items from data"
   (m "table.datatable.pure-table.pure-table-horizontal" nil
      [(m "tr" nil
-         [(m "td" nil "Title")
-          (m "td" nil "Url")
-          (m "td" nil "Referer")
-          (m "td" nil "Comment")
-          (m "td" nil "Time")
-          (m "td" nil "")])
+         [(m "th" nil "Title")
+          (m "th" nil "Url")
+          (m "th" nil "Referer")
+          (m "th" nil "Time")
+          (m "th" nil "Comment")
+          (m "th" nil "")])
       (map-indexed
         (fn [i item]
           (let [title (get item "title" "")
@@ -152,8 +151,8 @@
               (m "tr" nil [(m "td" nil title)
                            (m "td" nil url)
                            (m "td" nil referer)
-                           (m "td" nil comment)
                            (m "td" nil time)
+                           (m "td" nil comment)
                            (m "td" nil
                               [(m "button.pure-button" {:onclick #(edit item pos)} "Edit")])])))
         (if (< PAGESIZE (count data))
@@ -191,7 +190,7 @@
       (m "#nav" nil
          [(m "div" nil (m "button.pure-button.button-success" {:onclick #(data_to_db DB)} "Save"))
           (pages)])
-      (m "div" nil [(editor (:editing db))])
+      (m "#editor" nil [(editor (:editing db))])
       (m "div" {} [(notes (:data db) (:start db))])]))
 
 (def app {:controller ctrl :view viewer})
