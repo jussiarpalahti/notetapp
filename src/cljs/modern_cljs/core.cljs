@@ -104,7 +104,10 @@
   (updatedb [:editing] (merge {:pos pos} item)))
 
 (defn save []
-  (let [doc (:editing db)
+  (let [d (:editing db)
+        doc (if (nil? (get d "time"))
+              (assoc d "time" (str (new js/Date)))
+              d)
         data (:data db)
         pos (:pos doc)]
     (if (not (empty? doc))
@@ -117,6 +120,10 @@
         (clear)
         (println "Saved!" (str doc))))))
 
+(defn delete [pos]
+  (let [data (:data db)]
+    (updatedb [:data]
+              (vec (concat (subvec data 0 pos) (subvec data (inc pos)))))))
 ;
 ; View
 ;
@@ -174,7 +181,8 @@
                            (m "td" nil (format_time (new js/Date time)))
                            (m "td" nil comment)
                            (m "td" nil
-                              [(m "button.pure-button" {:onclick #(edit item pos)} "Edit")])])))
+                              [(m "button.pure-button" {:onclick #(edit item pos)} "Edit")
+                               (m "button.pure-button" {:onclick #(delete pos)} "Remove")])])))
         (if (< PAGESIZE (count data))
           (subvec data start (+ start PAGESIZE))
           data))]))
@@ -240,11 +248,11 @@
                   "url" (route_param "url")
                   "referer" (route_param "referer")
                   "time" (str (new js/Date))}]
-      (if (not(nil? (get "url" params)))
+      (if (not(nil? (get params "url")))
         (do (println "initial param was:" params)
             (.route js/m "/")
             (updatedb [:editing] params))
-        (println "No params!"))))
+        (println "No params!" params))))
   (println "No auth!"))
 
 ;; (require '[modern-cljs.core :as c] :reload)
