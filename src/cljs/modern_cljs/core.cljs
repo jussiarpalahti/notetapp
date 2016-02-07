@@ -13,7 +13,7 @@
 ;
 
 (def ^:const PAGESIZE 10)
-(def ^:const DB "/data2.json")
+(def ^:const DB "/data.json")
 
 ;
 ; Mithril helpers
@@ -176,8 +176,8 @@
                 time (get item "time" "")
                 pos (+ start i)]
               (m "tr" nil [(m "td.itemtitle" nil title)
-                           (m "td" nil (m ".sizer" nil url))
-                           (m "td" nil (m ".sizer" nil referer))
+                           (m "td" nil (m "a.link" {:href url} "Link"))
+                           (m "td" nil (if (not(= "" referer)) (m "a.link" {:href referer} "Referer")))
                            (m "td" nil (format_time (new js/Date time)))
                            (m "td" nil comment)
                            (m "td" nil

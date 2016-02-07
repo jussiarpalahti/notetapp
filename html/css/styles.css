@@ -12,7 +12,7 @@ html {
 	margin: 0.1em;
 }
 
-.button-success {
+.button-success, .link {
 	color: white;
 	border-radius: 4px;
 	text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
@@ -20,11 +20,13 @@ html {
 	font-size: 110%;
 }
 
-.sizer {
-	max-width: 18em;
-	min-height: 1.7em;
-	padding-bottom: 0.5em;
-	overflow: scroll;
+.link {
+	background: rgb(66, 184, 221); /* this is a light blue */
+	padding: 0.4em 0.6em;
+}
+
+.link:hover {
+	background-color: mediumblue;
 }
 
 .itemtitle {
