@@ -193,14 +193,14 @@
         end (+ next PAGESIZE)
         stop (if (not (or (< next 0) (< count next))) true false)]
     (if stop
-      (m "span" nil
+      (m "span.pagelink" nil
        [(m "a"
            {:onclick (fn [e]
                        (.preventDefault e)
                        (setpage next))
             :href ""}
-           (str "Items: " pagenum "-" end))])
-      nil)))
+           (str pagenum " - " end))])
+      (m "span.pagelink.emptypage" nil "______"))))
 
 (defn pages []
   (let [start (:start db)
