@@ -8,12 +8,15 @@
             [setup_dropbox]
             [goog.i18n.DateTimeFormat :as dtf]))
 
+(enable-console-print!)
+
 ;
 ; Constants
 ;
 
 (def ^:const PAGESIZE 10)
 (def ^:const DB "/data.json")
+(def ^:const DATEFORMAT "d.M.yyyy H:mm")
 
 ;
 ; Mithril helpers
@@ -24,19 +27,17 @@
   (js/m tag (clj->js attrs) (clj->js values)))
 
 (defn nm
-  "Mithril in Cljs supporting different arguments amounts"
-  ([x]
-   '("Lone tag"))
-  ([x y]
-   (if (= (type y) (type []))
-     '("Tag with children")
-     (if (= (type y) (type {}))
-       '("Lone tag with attrs")
-       '("Tag with text worthy content, I hope"))))
-  ([x y z]
-   (if (= (type z) (type []))
-     '("Tag with attrs and children")
-     '("Tag with attrs and text worthy content, I hope"))))
+  "Mithril in Cljs supporting different call methods"
+  ([tag]
+   (m tag nil nil))
+  ([tag par2]
+   (if (= (type par2) (type []))
+     (m tag nil par2)
+     (if (= (type par2) (type {}))
+       (m tag par2 nil)
+       (m tag nil par2))))
+  ([tag par2 par3]
+   (m tag par2 par3)))
 
 (defn route_param [param]
   "Get param from route params"
@@ -46,8 +47,9 @@
 ; Closure helpers
 ;
 
-(defn format_time [d]
-  (let [format (new goog.i18n.DateTimeFormat "d.M.yyyy H:mm")]
+(defn format_time [d format]
+  "Render instance of js/Date according to format"
+  (let [format (new goog.i18n.DateTimeFormat format)]
     (.format format d)))
 
 ;
@@ -129,10 +131,9 @@
 ;
 
 (defn text [id value size]
-  (m "input[type=text]"
+  (nm "input[type=text]"
      {:value value :placeholder id :size size
-      :onchange #(update_field id (-> % .-target .-value))}
-     nil))
+      :onchange #(update_field id (-> % .-target .-value))}))
 
 (defn editor [data]
   (let [title (get data "title" "")
@@ -175,14 +176,14 @@
                 comment (get item "comment" "")
                 time (get item "time" "")
                 pos (+ start i)]
-              (m "tr" nil [(m "td.itemtitle" nil title)
-                           (m "td" nil (m "a.link" {:href url} "Link"))
-                           (m "td" nil (if (not(= "" referer)) (m "a.link" {:href referer} "Referer")))
-                           (m "td" nil (format_time (new js/Date time)))
-                           (m "td" nil comment)
-                           (m "td" nil
-                              [(m "button.pure-button" {:onclick #(edit item pos)} "Edit")
-                               (m "button.pure-button" {:onclick #(delete pos)} "Remove")])])))
+              (nm "tr" [(m "td.itemtitle" nil title)
+                           (nm "td" (m "a.link" {:href url} "Link"))
+                           (nm "td" (if (not(= "" referer)) (m "a.link" {:href referer} "Referer")))
+                           (nm "td" (format_time (new js/Date time) DATEFORMAT))
+                           (nm "td" comment)
+                           (nm "td"
+                              [(nm "button.pure-button" {:onclick #(edit item pos)} "Edit")
+                               (nm "button.pure-button" {:onclick #(delete pos)} "Remove")])])))
         (if (< PAGESIZE (count data))
           (subvec data start (+ start PAGESIZE))
           data))]))
@@ -193,19 +194,19 @@
         end (+ next PAGESIZE)
         stop (if (not (or (< next 0) (< count next))) true false)]
     (if stop
-      (m "span.pagelink" nil
+      (nm "span.pagelink"
        [(m "a"
            {:onclick (fn [e]
                        (.preventDefault e)
                        (setpage next))
             :href ""}
            (str pagenum " - " end))])
-      (m "span.pagelink.emptypage" nil "______"))))
+      (nm "span.pagelink.emptypage" "______"))))
 
 (defn pages []
   (let [start (:start db)
         count (count (:data db))]
-    (m "#pages" nil ["Count: " count " " (page start - count) " " (page start + count)])))
+    (nm "#pages" ["Count: " count " " (page start - count) " " (page start + count)])))
 
 (defn ctrl []
   (if (not (:data db nil))
@@ -213,18 +214,16 @@
         (data_from_db DB))))
 
 (defn viewer [c]
-  (m "div" nil
-     [(m "div" nil [(m "h1" {:style {:color "green"}} "NoteTapp")])
-      (m "#nav" nil
-         [(m "div" nil
-             (m "button.pure-button.button-success" {:onclick #(data_to_db DB)} "Save"))])
-      (m "#editor" nil [(editor (:editing db))])
+  (nm "div"
+     [(nm "div" [(nm "h1" {:style {:color "green"}} "NoteTapp")])
+      (nm "#nav"
+         [(nm "div"
+             (nm "button.pure-button.button-success" {:onclick #(data_to_db DB)} "Save"))])
+      (nm "#editor" [(editor (:editing db))])
       (pages)
-      (m "div" {} [(notes (:data db) (:start db))])]))
+      (nm "div" [(notes (:data db) (:start db))])]))
 
 (def app {:controller ctrl :view viewer})
-
-(enable-console-print!)
 
 ;; Routing mode
 (aset (.-route js/m) "mode" "hash")
