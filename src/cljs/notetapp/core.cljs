@@ -1,5 +1,5 @@
 
-(ns modern-cljs.core
+(ns notetapp.core
   (:require [foo.bar]
             [m]
             [ajax.core :refer [GET POST]]
@@ -254,6 +254,6 @@
         (println "No params!" params))))
   (println "No auth!"))
 
-;; (require '[modern-cljs.core :as c] :reload)
+;; (require '[notetapp.core :as c] :reload)
 ;; alt cmd e -> search repl history
 ;; (.route js/m "/")
