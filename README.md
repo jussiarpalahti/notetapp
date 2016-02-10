@@ -1,11 +1,7 @@
 
-# Modern Clojurescript adapted
+# NoteTapp note taking application with ClojureScript and Mithril
 
-This repository started as working environment for Modern Cljs,
-but is now a Clojurescript web development experimentation using
-Mithril from within Cljs.
-
-It sort of kind of works.
+You need to have [Clojure](https://clojure.org) and [Boot](http://boot-clj.com/) installed. Build script is based on [Modern ClojureScript](https://github.com/magomimmo/modern-cljs).
 
 ## Regular dev environment
 
@@ -21,11 +17,6 @@ It sort of kind of works.
 
 ## For production use advanced optimization
 
-Though currently warns about how set! updates things in db, since it might not work on older JS...
-
   boot cljs -O advanced target -d target
 
-Also, for some reason first rendering does not produce anything nor complain about nothing,
-but afterwards calling updatedb does yield regular content rendering. Perhaps for some reason
-not everything is ready at the point where Mithril is already mounting, since it manages to
-produce the DIV it should though devoid of content.
+App now consists of target/index.html, target/js/main.js and target/css/styles.css.
